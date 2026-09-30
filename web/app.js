@@ -4,6 +4,8 @@
     const boardElement = document.getElementById('board');
     const stepButton = document.getElementById('step');
     let board = Game.createBoard();
+    // The saved pattern last loaded or saved: marked in the list.
+    let currentPatternId = null;
 
     // One button per cell: clickable and usable from the keyboard.
     // cellElements[r][c] is the button of the cell in row r, column c.
@@ -82,6 +84,8 @@
             .then((response) => response.json().catch(() => ({})).then((body) => {
                 if (response.ok) {
                     showSaveMessage(`Elmentve: ${body.name}`, true);
+                    currentPatternId = body.id;
+                    loadPatternList();
                 } else {
                     showSaveMessage(saveErrors[body.error] || 'Nem sikerült menteni: a szerver nem érhető el.', false);
                 }
@@ -92,6 +96,105 @@
                 saveButton.textContent = 'Mentés';
             });
     });
+
+    // The saved patterns next to the board; clicking one puts it on the board.
+    const patternList = document.getElementById('pattern-list');
+    const patternsEmpty = document.getElementById('patterns-empty');
+    const patternsMessage = document.getElementById('patterns-message');
+    const listUnavailable = 'A mentett minták nem érhetők el: a szerver nem válaszol.';
+    let loadingPattern = false;
+    let listRequest = 0;
+
+    function showPatternsMessage(text, ok) {
+        patternsMessage.textContent = text;
+        patternsMessage.className = ok ? 'message ok' : 'message bad';
+    }
+
+    function renderPatternList(patterns) {
+        const items = document.createDocumentFragment();
+        for (const pattern of patterns) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'pattern';
+            button.dataset.id = pattern.id;
+            button.disabled = loadingPattern;
+            if (pattern.id === currentPatternId) {
+                button.setAttribute('aria-current', 'true');
+            }
+            const name = document.createElement('span');
+            name.className = 'pattern-name';
+            name.textContent = pattern.name;
+            const savedAt = document.createElement('time');
+            savedAt.dateTime = pattern.updatedAt;
+            savedAt.textContent = Game.formatSavedAt(pattern.updatedAt);
+            button.append(name, savedAt);
+            const item = document.createElement('li');
+            item.appendChild(button);
+            items.appendChild(item);
+        }
+        patternList.replaceChildren(items);
+        patternsEmpty.hidden = patterns.length > 0;
+    }
+
+    // Asks for the list again; only the answer to the latest request is shown.
+    function loadPatternList() {
+        const request = ++listRequest;
+        return fetch('/api/patterns')
+            .then((response) => response.ok ? response.json() : Promise.reject(response.status))
+            .then((patterns) => {
+                if (request !== listRequest) return;
+                renderPatternList(patterns);
+                if (patternsMessage.textContent === listUnavailable) {
+                    showPatternsMessage('', true);
+                }
+            })
+            .catch(() => {
+                if (request !== listRequest) return;
+                showPatternsMessage(listUnavailable, false);
+            });
+    }
+
+    function setPatternsDisabled(disabled) {
+        loadingPattern = disabled;
+        patternList.querySelectorAll('.pattern').forEach((button) => { button.disabled = disabled; });
+    }
+
+    function markCurrentPattern() {
+        patternList.querySelectorAll('.pattern').forEach((button) => {
+            if (Number(button.dataset.id) === currentPatternId) {
+                button.setAttribute('aria-current', 'true');
+            } else {
+                button.removeAttribute('aria-current');
+            }
+        });
+    }
+
+    patternList.addEventListener('click', (event) => {
+        const button = event.target.closest('.pattern');
+        if (!button || loadingPattern) return;
+        setPatternsDisabled(true);
+        fetch(`/api/patterns/${button.dataset.id}`)
+            .then((response) => response.json().catch(() => ({})).then((body) => {
+                if (response.ok) {
+                    board = Game.boardFromCells(body.cells);
+                    render();
+                    nameInput.value = body.name;
+                    showSaveMessage('', true);
+                    currentPatternId = body.id;
+                    markCurrentPattern();
+                    showPatternsMessage(`Betöltve: ${body.name}`, true);
+                } else if (response.status === 404) {
+                    showPatternsMessage('Ez a minta már nem érhető el.', false);
+                    loadPatternList();
+                } else {
+                    showPatternsMessage('Nem sikerült betölteni: a szerver nem érhető el.', false);
+                }
+            }))
+            .catch(() => showPatternsMessage('Nem sikerült betölteni: a szerver nem érhető el.', false))
+            .finally(() => setPatternsDisabled(false));
+    });
+
+    loadPatternList();
 
     fetch('/api/health')
         .then((response) => response.ok ? response.json() : Promise.reject(response.status))
