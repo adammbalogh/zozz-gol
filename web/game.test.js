@@ -208,3 +208,9 @@ test('nextGeneration works on a non-square board and leaves the input untouched'
         '..#...',
     ));
 });
+
+test('automatic play steps 5 generations per second', () => {
+    assert.strictEqual(Game.GENERATIONS_PER_SECOND, 5);
+    assert.strictEqual(Game.stepInterval(), 200);
+    assert.strictEqual(Game.stepInterval(10), 100);
+});

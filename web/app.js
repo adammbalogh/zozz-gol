@@ -3,6 +3,7 @@
     const status = document.getElementById('status');
     const boardElement = document.getElementById('board');
     const stepButton = document.getElementById('step');
+    const playButton = document.getElementById('play');
     let board = Game.createBoard();
 
     // One button per cell: clickable and usable from the keyboard.
@@ -44,10 +45,31 @@
     });
 
     // One generation forward by the rules of the game.
-    stepButton.addEventListener('click', () => {
+    function step() {
         board = Game.nextGeneration(board);
         render();
-    });
+    }
+
+    stepButton.addEventListener('click', step);
+
+    // Automatic play: steps the board on its own until it is stopped.
+    // Cells can still be clicked meanwhile; the next step starts from the edited board.
+    let timer = null;
+
+    function start() {
+        timer = setInterval(step, Game.stepInterval());
+        playButton.textContent = 'Megállítás';
+        stepButton.disabled = true;
+    }
+
+    function stop() {
+        clearInterval(timer);
+        timer = null;
+        playButton.textContent = 'Indítás';
+        stepButton.disabled = false;
+    }
+
+    playButton.addEventListener('click', () => (timer ? stop() : start()));
 
     // Saving the board under a name.
     const saveForm = document.getElementById('save-form');
