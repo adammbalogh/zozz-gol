@@ -4,6 +4,14 @@ const Game = {};
 // The board is SIZE x SIZE cells.
 Game.SIZE = 30;
 
+// Automatic play steps this many generations per second.
+Game.GENERATIONS_PER_SECOND = 5;
+
+// The time between two generations in automatic play, in milliseconds.
+Game.stepInterval = function (perSecond = Game.GENERATIONS_PER_SECOND) {
+    return 1000 / perSecond;
+};
+
 // A new board (rows x cols) with every cell dead (false).
 Game.createBoard = function (rows = Game.SIZE, cols = Game.SIZE) {
     return Array.from({ length: rows }, () => new Array(cols).fill(false));
