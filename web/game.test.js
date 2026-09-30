@@ -70,3 +70,141 @@ test('patternName is empty for a blank name', () => {
         assert.strictEqual(Game.patternName(text), '');
     }
 });
+
+// A board built from rows of '#' (alive) and '.' (dead), to keep the patterns readable.
+function parse(...rows) {
+    return rows.map((row) => [...row].map((ch) => ch === '#'));
+}
+
+test('countNeighbors counts the live cells around a cell, not the cell itself', () => {
+    const board = parse(
+        '###',
+        '.#.',
+        '#..',
+    );
+    assert.strictEqual(Game.countNeighbors(board, 1, 1), 4);
+    assert.strictEqual(Game.countNeighbors(board, 0, 0), 2);
+    assert.strictEqual(Game.countNeighbors(board, 2, 2), 1);
+});
+
+test('a live cell with 2 or 3 live neighbours survives', () => {
+    const two = Game.nextGeneration(parse(
+        '#..',
+        '.#.',
+        '..#',
+    ));
+    assert.strictEqual(two[1][1], true);
+    const three = Game.nextGeneration(parse(
+        '#.#',
+        '.#.',
+        '..#',
+    ));
+    assert.strictEqual(three[1][1], true);
+});
+
+test('a live cell with fewer than 2 or more than 3 live neighbours dies', () => {
+    for (const rows of [
+        ['...', '.#.', '...'],
+        ['#..', '.#.', '...'],
+        ['#.#', '.#.', '#.#'],
+        ['###', '.#.', '###'],
+    ]) {
+        assert.strictEqual(Game.nextGeneration(parse(...rows))[1][1], false, rows.join('/'));
+    }
+});
+
+test('a dead cell comes alive with exactly 3 live neighbours, and only then', () => {
+    assert.strictEqual(Game.nextGeneration(parse('#.#', '...', '#..'))[1][1], true);
+    for (const rows of [
+        ['#.#', '...', '...'],
+        ['#.#', '...', '#.#'],
+        ['###', '#.#', '###'],
+    ]) {
+        assert.strictEqual(Game.nextGeneration(parse(...rows))[1][1], false, rows.join('/'));
+    }
+});
+
+test('a horizontal blinker turns vertical after one step and back after two', () => {
+    const horizontal = parse(
+        '.....',
+        '.....',
+        '.###.',
+        '.....',
+        '.....',
+    );
+    const vertical = parse(
+        '.....',
+        '..#..',
+        '..#..',
+        '..#..',
+        '.....',
+    );
+    const once = Game.nextGeneration(horizontal);
+    assert.deepStrictEqual(once, vertical);
+    assert.deepStrictEqual(Game.nextGeneration(once), horizontal);
+});
+
+test('the edge of the board is a wall: nothing wraps around to the other side', () => {
+    // A blinker in the top row loses the cell that would be above the board.
+    assert.deepStrictEqual(Game.nextGeneration(parse(
+        '.###.',
+        '.....',
+        '.....',
+        '.....',
+        '.....',
+    )), parse(
+        '..#..',
+        '..#..',
+        '.....',
+        '.....',
+        '.....',
+    ));
+    // A vertical blinker in the left column: nothing appears in the right column.
+    assert.deepStrictEqual(Game.nextGeneration(parse(
+        '.....',
+        '#....',
+        '#....',
+        '#....',
+        '.....',
+    )), parse(
+        '.....',
+        '.....',
+        '##...',
+        '.....',
+        '.....',
+    ));
+    // A block in the corner stays, and does not feed the opposite corners.
+    const corner = parse(
+        '....',
+        '....',
+        '..##',
+        '..##',
+    );
+    assert.deepStrictEqual(Game.nextGeneration(corner), corner);
+});
+
+test('a stable block does not change and an empty board stays empty', () => {
+    const block = parse(
+        '....',
+        '.##.',
+        '.##.',
+        '....',
+    );
+    assert.deepStrictEqual(Game.nextGeneration(block), block);
+    assert.deepStrictEqual(Game.nextGeneration(Game.createBoard()), Game.createBoard());
+});
+
+test('nextGeneration works on a non-square board and leaves the input untouched', () => {
+    const board = parse(
+        '......',
+        '.###..',
+        '......',
+    );
+    const next = Game.nextGeneration(board);
+    assert.deepStrictEqual(board, parse('......', '.###..', '......'));
+    assert.deepStrictEqual(next, parse(
+        '..#...',
+        '..#...',
+        '..#...',
+    ));
+});
