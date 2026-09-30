@@ -1,6 +1,7 @@
 // The API: everything under /api.
 const express = require('express');
 const { pool, migrate } = require('./db');
+const patterns = require('./patterns');
 
 const app = express();
 app.use(express.json());
@@ -13,6 +14,8 @@ app.get('/api/health', async (req, res) => {
         res.status(503).json({ ok: false, db: false });
     }
 });
+
+app.use(patterns.router);
 
 if (require.main === module) {
     const port = Number(process.env.PORT || 3000);

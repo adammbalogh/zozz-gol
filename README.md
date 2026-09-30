@@ -15,6 +15,8 @@ Az oldal: http://localhost:8090 — az API: http://localhost:8090/api/health
 
 - `web/` — a felület: statikus HTML, CSS és JavaScript (keretrendszer nélkül); a játék logikája a `web/game.js`-ben
 - `api/` — Node.js (Express) API a `/api` alatt; a PostgreSQL-táblákat az `api/migrations/*.sql` fájlok hozzák létre indításkor
+- mentett minták: a tábla melletti „Mentés” gomb a `POST /api/patterns` végpontra küldi az élő sejteket
+  (az azonos nevű mentést felülírja); a mentések listája: `GET /api/patterns`
 - `nginx/` — a webszerver: kiszolgálja a `web/` mappát, és a `/api` kéréseket továbbítja az API-nak
 
 ## Tesztek

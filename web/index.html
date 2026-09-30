@@ -12,10 +12,18 @@
         <p class="status" id="status">Kapcsolódás a szerverhez…</p>
     </header>
     <main id="app">
-        <div id="board" class="board" role="group" aria-label="Játéktábla"></div>
-        <div class="controls">
-            <button type="button" id="step" class="button">Következő lépés</button>
+        <div>
+            <div id="board" class="board" role="group" aria-label="Játéktábla"></div>
+            <div class="controls">
+                <button type="button" id="step" class="button">Következő lépés</button>
+            </div>
         </div>
+        <form id="save-form" class="panel" novalidate>
+            <label for="pattern-name">Minta neve</label>
+            <input id="pattern-name" name="name" maxlength="50" autocomplete="off" placeholder="például: Sikló">
+            <button type="submit" id="save-button">Mentés</button>
+            <p id="save-message" class="message" aria-live="polite"></p>
+        </form>
     </main>
     <script src="game.js"></script>
     <script src="app.js"></script>

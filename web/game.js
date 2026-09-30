@@ -20,6 +20,20 @@ Game.toggleCell = function (board, row, col) {
         : cells);
 };
 
+// The live cells of a board as [row, col] pairs, row by row.
+Game.liveCells = function (board) {
+    const cells = [];
+    board.forEach((row, r) => row.forEach((alive, c) => {
+        if (alive) cells.push([r, c]);
+    }));
+    return cells;
+};
+
+// The name a pattern is saved under: the text without the spaces around it ('' if none is left).
+Game.patternName = function (text) {
+    return String(text || '').trim();
+};
+
 // How many of the 8 neighbours of a cell are alive.
 // The edge of the board is a wall: positions outside it count as dead (no wrap-around).
 Game.countNeighbors = function (board, row, col) {
