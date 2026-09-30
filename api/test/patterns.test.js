@@ -60,3 +60,21 @@ test('saving without a name is refused before the database', async () => {
 test('saving says when the database cannot be reached', async () => {
     assert.deepStrictEqual(await post(valid), { status: 503, body: { error: 'db_unavailable' } });
 });
+
+async function get(path) {
+    const server = app.listen(0);
+    const { port } = server.address();
+    const response = await fetch(`http://127.0.0.1:${port}${path}`);
+    server.close();
+    return { status: response.status, body: await response.json() };
+}
+
+test('loading a pattern with an id that cannot exist is refused before the database', async () => {
+    for (const id of ['abc', '0', '-1', '1.5', '01', '9999999999']) {
+        assert.deepStrictEqual(await get(`/api/patterns/${id}`), { status: 404, body: { error: 'not_found' } }, id);
+    }
+});
+
+test('loading a pattern says when the database cannot be reached', async () => {
+    assert.deepStrictEqual(await get('/api/patterns/1'), { status: 503, body: { error: 'db_unavailable' } });
+});

@@ -71,6 +71,33 @@ test('patternName is empty for a blank name', () => {
     }
 });
 
+test('boardFromCells gives back the board the cells were taken from', () => {
+    let board = Game.createBoard();
+    for (const [row, col] of [[0, 1], [1, 2], [2, 0], [2, 1], [2, 2], [29, 29]]) {
+        board = Game.toggleCell(board, row, col);
+    }
+    assert.deepStrictEqual(Game.boardFromCells(Game.liveCells(board)), board);
+});
+
+test('boardFromCells makes an empty 30x30 board from no cells', () => {
+    assert.deepStrictEqual(Game.boardFromCells([]), Game.createBoard());
+    assert.deepStrictEqual(Game.boardFromCells(undefined), Game.createBoard());
+});
+
+test('boardFromCells leaves out the cells that are not on the board', () => {
+    const cells = [[1, 1], [-1, 0], [0, 3], [3, 0], [0.5, 1], ['1', 2], [1], null, 'x'];
+    assert.deepStrictEqual(Game.boardFromCells(cells, 3, 3), [
+        [false, false, false],
+        [false, true, false],
+        [false, false, false],
+    ]);
+});
+
+test('formatSavedAt shows the date and time with leading zeros', () => {
+    assert.strictEqual(Game.formatSavedAt(new Date(2026, 8, 30, 13, 9)), '2026. 09. 30. 13:09');
+    assert.strictEqual(Game.formatSavedAt(new Date(2027, 0, 5, 7, 45).toISOString()), '2027. 01. 05. 07:45');
+});
+
 // A board built from rows of '#' (alive) and '.' (dead), to keep the patterns readable.
 function parse(...rows) {
     return rows.map((row) => [...row].map((ch) => ch === '#'));

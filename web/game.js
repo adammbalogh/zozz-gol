@@ -34,6 +34,26 @@ Game.patternName = function (text) {
     return String(text || '').trim();
 };
 
+// A new board (rows x cols) with the given [row, col] cells alive, e.g. a saved pattern.
+// Cells that are not on the board are left out.
+Game.boardFromCells = function (cells, rows = Game.SIZE, cols = Game.SIZE) {
+    const board = Game.createBoard(rows, cols);
+    for (const cell of Array.isArray(cells) ? cells : []) {
+        const [row, col] = Array.isArray(cell) ? cell : [];
+        if (Number.isInteger(row) && Number.isInteger(col) && row >= 0 && row < rows && col >= 0 && col < cols) {
+            board[row][col] = true;
+        }
+    }
+    return board;
+};
+
+// When a pattern was saved, in local time: "2026. 09. 30. 13:39".
+Game.formatSavedAt = function (date) {
+    const d = new Date(date);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}. ${pad(d.getMonth() + 1)}. ${pad(d.getDate())}. ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
 // How many of the 8 neighbours of a cell are alive.
 // The edge of the board is a wall: positions outside it count as dead (no wrap-around).
 Game.countNeighbors = function (board, row, col) {

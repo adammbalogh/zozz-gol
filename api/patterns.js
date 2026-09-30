@@ -76,4 +76,23 @@ router.get('/api/patterns', async (req, res) => {
     }
 });
 
+// One saved pattern with its cells, to show it on the board.
+router.get('/api/patterns/:id', async (req, res) => {
+    if (!/^[1-9]\d{0,8}$/.test(req.params.id)) {
+        return res.status(404).json({ error: 'not_found' });
+    }
+    try {
+        const result = await pool.query(
+            `SELECT id, name, rows, cols, cells, updated_at AS "updatedAt" FROM patterns WHERE id = $1`,
+            [Number(req.params.id)],
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'not_found' });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(503).json({ error: 'db_unavailable' });
+    }
+});
+
 module.exports = { router, validatePattern };
