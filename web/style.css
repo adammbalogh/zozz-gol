@@ -28,4 +28,30 @@ h1 { margin: 0 0 4px; font-size: 26px; }
 
 main { padding: 16px 32px 32px; }
 
-.empty { color: var(--muted); }
+/* Fits a laptop screen without scrolling: the header and the paddings take about 170px. */
+.board {
+    --board-size: min(640px, calc(100vh - 170px), calc(100vw - 64px));
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    width: var(--board-size);
+    height: var(--board-size);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+}
+
+@supports (height: 100dvh) {
+    .board { --board-size: min(640px, calc(100dvh - 170px), calc(100vw - 64px)); }
+}
+
+.cell {
+    background: #fff;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.cell:hover { background: #e8eefc; }
+.cell.alive { background: var(--ink); }
+.cell.alive:hover { background: #3a4460; }
+.cell:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
