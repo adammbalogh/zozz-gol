@@ -47,3 +47,26 @@ test('toggleCell ignores cells outside the board', () => {
         assert.strictEqual(Game.toggleCell(board, row, col), board);
     }
 });
+
+test('liveCells lists no cells for an empty board', () => {
+    assert.deepStrictEqual(Game.liveCells(Game.createBoard()), []);
+});
+
+test('liveCells lists the live cells row by row', () => {
+    let board = Game.createBoard(3, 3);
+    for (const [row, col] of [[2, 2], [0, 1], [2, 0], [1, 2]]) {
+        board = Game.toggleCell(board, row, col);
+    }
+    assert.deepStrictEqual(Game.liveCells(board), [[0, 1], [1, 2], [2, 0], [2, 2]]);
+});
+
+test('patternName trims the spaces around the name', () => {
+    assert.strictEqual(Game.patternName('  Sikló '), 'Sikló');
+    assert.strictEqual(Game.patternName('Két szó'), 'Két szó');
+});
+
+test('patternName is empty for a blank name', () => {
+    for (const text of ['', '   ', '\t\n', undefined, null]) {
+        assert.strictEqual(Game.patternName(text), '');
+    }
+});
