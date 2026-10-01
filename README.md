@@ -18,6 +18,8 @@ Az oldal: http://localhost:8090 — az API: http://localhost:8090/api/health
 - mentett minták: a tábla melletti „Mentés” gomb a `POST /api/patterns` végpontra küldi az élő sejteket
   (az azonos nevű mentést felülírja); a mentések listája: `GET /api/patterns` (a legújabb elöl), egy minta
   a sejtjeivel: `GET /api/patterns/:id` — a tábla melletti „Mentett minták” listából egy kattintással betölthető
+- a tábla alatt a „Generáció” számláló mutatja, hány lépést tett a tábla; mintabetöltéskor és a „Tábla törlése”
+  gombbal (amely a lejátszást is megállítja) nullázódik
 - `nginx/` — a webszerver: kiszolgálja a `web/` mappát, és a `/api` kéréseket továbbítja az API-nak
 
 ## Tesztek

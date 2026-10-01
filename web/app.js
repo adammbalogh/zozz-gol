@@ -4,9 +4,13 @@
     const boardElement = document.getElementById('board');
     const stepButton = document.getElementById('step');
     const playButton = document.getElementById('play');
+    const clearButton = document.getElementById('clear');
+    const generationElement = document.getElementById('generation');
     let board = Game.createBoard();
     // The saved pattern last loaded or saved: marked in the list.
     let currentPatternId = null;
+    // How many steps the board has taken since it was last loaded or cleared.
+    let generation = 0;
 
     // One button per cell: clickable and usable from the keyboard.
     // cellElements[r][c] is the button of the cell in row r, column c.
@@ -46,10 +50,21 @@
         renderCell(r, c);
     });
 
+    function renderGeneration() {
+        generationElement.textContent = `Generáció: ${generation}`;
+    }
+
+    function resetGeneration() {
+        generation = 0;
+        renderGeneration();
+    }
+
     // One generation forward by the rules of the game.
     function step() {
         board = Game.nextGeneration(board);
         render();
+        generation++;
+        renderGeneration();
     }
 
     stepButton.addEventListener('click', step);
@@ -72,6 +87,14 @@
     }
 
     playButton.addEventListener('click', () => (timer ? stop() : start()));
+
+    // Empties the board and stops automatic play; the counter starts again from 0.
+    clearButton.addEventListener('click', () => {
+        if (timer) stop();
+        board = Game.createBoard();
+        render();
+        resetGeneration();
+    });
 
     // Saving the board under a name.
     const saveForm = document.getElementById('save-form');
@@ -200,6 +223,7 @@
                 if (response.ok) {
                     board = Game.boardFromCells(body.cells);
                     render();
+                    resetGeneration();
                     nameInput.value = body.name;
                     showSaveMessage('', true);
                     currentPatternId = body.id;
