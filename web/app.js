@@ -6,6 +6,8 @@
     const playButton = document.getElementById('play');
     const clearButton = document.getElementById('clear');
     const generationElement = document.getElementById('generation');
+    const speedInput = document.getElementById('speed');
+    const speedValue = document.getElementById('speed-value');
     let board = Game.createBoard();
     // The saved pattern last loaded or saved: marked in the list.
     let currentPatternId = null;
@@ -73,8 +75,49 @@
     // Cells can still be clicked meanwhile; the next step starts from the edited board.
     let timer = null;
 
+    // Generations per second in automatic play, set with the slider and remembered in this browser.
+    const speedKey = 'gol.speed';
+    let speed = Game.speedFromSetting(readStoredSpeed());
+
+    // The storage can be off (e.g. private browsing): then the speed is simply not remembered.
+    function readStoredSpeed() {
+        try {
+            return localStorage.getItem(speedKey);
+        } catch {
+            return null;
+        }
+    }
+
+    function storeSpeed() {
+        try {
+            localStorage.setItem(speedKey, String(speed));
+        } catch {
+            // Not remembered; the slider still works.
+        }
+    }
+
+    function renderSpeed() {
+        const text = `${speed} generáció/mp`;
+        speedInput.value = speed;
+        speedInput.setAttribute('aria-valuetext', text);
+        speedValue.textContent = text;
+    }
+
+    renderSpeed();
+
+    // A new speed applies at once: a running play is restarted at the new pace.
+    speedInput.addEventListener('input', () => {
+        speed = Game.speedFromSetting(speedInput.value);
+        renderSpeed();
+        storeSpeed();
+        if (timer) {
+            clearInterval(timer);
+            timer = setInterval(step, Game.stepInterval(speed));
+        }
+    });
+
     function start() {
-        timer = setInterval(step, Game.stepInterval());
+        timer = setInterval(step, Game.stepInterval(speed));
         playButton.textContent = 'Megállítás';
         stepButton.disabled = true;
     }

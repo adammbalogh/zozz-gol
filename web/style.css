@@ -34,7 +34,7 @@ main {
     padding: 16px 32px 32px;
 }
 
-/* Fits a laptop screen without scrolling: the header, the controls, the generation counter and the paddings take about 250px. */
+/* Fits a laptop screen without scrolling: the header, the controls, the generation counter with the speed slider and the paddings take about 250px. */
 .board {
     --board-size: min(640px, calc(100vh - 250px), calc(100vw - 64px));
     display: grid;
@@ -68,13 +68,35 @@ main {
     margin-top: 12px;
 }
 
+/* The generation counter and the speed slider share one line below the buttons. */
+.playback {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px 16px;
+    margin-top: 8px;
+}
+
 /* Tabular digits keep the counter from jumping as the number grows. */
 .generation {
-    margin: 8px 0 0;
+    margin: 0;
     font-size: 14px;
     color: var(--muted);
     font-variant-numeric: tabular-nums;
 }
+
+/* A fixed width for the value keeps the slider in place as the number changes. */
+.speed {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.speed input { width: 140px; margin: 0; accent-color: var(--accent); }
+.speed output { min-width: 8.5em; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 .button {
     font: inherit;

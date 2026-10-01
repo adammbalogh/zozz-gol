@@ -4,8 +4,20 @@ const Game = {};
 // The board is SIZE x SIZE cells.
 Game.SIZE = 30;
 
-// Automatic play steps this many generations per second.
+// Automatic play steps this many generations per second, unless the speed slider says otherwise.
 Game.GENERATIONS_PER_SECOND = 5;
+
+// The speed slider goes from MIN_SPEED to MAX_SPEED generations per second.
+Game.MIN_SPEED = 1;
+Game.MAX_SPEED = 20;
+
+// The speed to play at from a stored or entered setting: a whole number between MIN_SPEED and MAX_SPEED.
+// A missing or unreadable setting gives the default speed; one outside the range gives the nearest end.
+Game.speedFromSetting = function (value) {
+    const speed = value === null || value === undefined || String(value).trim() === '' ? NaN : Number(value);
+    if (!Number.isFinite(speed)) return Game.GENERATIONS_PER_SECOND;
+    return Math.min(Game.MAX_SPEED, Math.max(Game.MIN_SPEED, Math.round(speed)));
+};
 
 // The time between two generations in automatic play, in milliseconds.
 Game.stepInterval = function (perSecond = Game.GENERATIONS_PER_SECOND) {

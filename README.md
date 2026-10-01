@@ -20,6 +20,8 @@ Az oldal: http://localhost:8090 — az API: http://localhost:8090/api/health
   a sejtjeivel: `GET /api/patterns/:id` — a tábla melletti „Mentett minták” listából egy kattintással betölthető
 - a tábla alatt a „Generáció” számláló mutatja, hány lépést tett a tábla; mintabetöltéskor és a „Tábla törlése”
   gombbal (amely a lejátszást is megállítja) nullázódik
+- mellette a „Sebesség” csúszkával 1–20 generáció/mp között állítható az automatikus lejátszás tempója
+  (alapérték 5); a változás futás közben azonnal érvényes, és a böngésző megjegyzi (`localStorage`, `gol.speed`)
 - `nginx/` — a webszerver: kiszolgálja a `web/` mappát, és a `/api` kéréseket továbbítja az API-nak
 
 ## Tesztek

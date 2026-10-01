@@ -241,3 +241,36 @@ test('automatic play steps 5 generations per second', () => {
     assert.strictEqual(Game.stepInterval(), 200);
     assert.strictEqual(Game.stepInterval(10), 100);
 });
+
+test('the speed ranges from 1 to 20 generations per second', () => {
+    assert.strictEqual(Game.MIN_SPEED, 1);
+    assert.strictEqual(Game.MAX_SPEED, 20);
+    assert.strictEqual(Game.stepInterval(1), 1000);
+    assert.strictEqual(Game.stepInterval(20), 50);
+});
+
+test('speedFromSetting keeps a valid speed', () => {
+    assert.strictEqual(Game.speedFromSetting('12'), 12);
+    assert.strictEqual(Game.speedFromSetting(1), 1);
+    assert.strictEqual(Game.speedFromSetting(20), 20);
+    assert.strictEqual(Game.speedFromSetting(' 7 '), 7);
+});
+
+test('speedFromSetting gives the default speed for a missing or unreadable setting', () => {
+    for (const value of [null, undefined, '', '  ', 'abc', NaN, Infinity, '5x', {}]) {
+        assert.strictEqual(Game.speedFromSetting(value), 5, String(value));
+    }
+});
+
+test('speedFromSetting brings a speed outside the range to the nearest end', () => {
+    assert.strictEqual(Game.speedFromSetting(0), 1);
+    assert.strictEqual(Game.speedFromSetting('-3'), 1);
+    assert.strictEqual(Game.speedFromSetting(99), 20);
+    assert.strictEqual(Game.speedFromSetting('21'), 20);
+});
+
+test('speedFromSetting rounds to a whole number of generations per second', () => {
+    assert.strictEqual(Game.speedFromSetting(7.6), 8);
+    assert.strictEqual(Game.speedFromSetting('2.4'), 2);
+    assert.strictEqual(Game.speedFromSetting(0.4), 1);
+});

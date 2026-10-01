@@ -19,7 +19,14 @@
                 <button type="button" id="play" class="button">Indítás</button>
                 <button type="button" id="clear" class="button">Tábla törlése</button>
             </div>
-            <p id="generation" class="generation">Generáció: 0</p>
+            <div class="playback">
+                <p id="generation" class="generation">Generáció: 0</p>
+                <div class="speed">
+                    <label for="speed">Sebesség</label>
+                    <input type="range" id="speed" min="1" max="20" step="1" value="5">
+                    <output id="speed-value" for="speed">5 generáció/mp</output>
+                </div>
+            </div>
         </div>
         <aside class="side">
             <form id="save-form" class="panel" novalidate>
