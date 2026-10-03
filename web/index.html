@@ -12,27 +12,7 @@
         <p class="status" id="status">Kapcsolódás a szerverhez…</p>
     </header>
     <main id="app">
-        <div>
-            <div id="board" class="board" role="group" aria-label="Játéktábla"></div>
-            <div class="controls">
-                <button type="button" id="step" class="button">Következő lépés</button>
-                <button type="button" id="play" class="button">Indítás</button>
-            </div>
-        </div>
-        <aside class="side">
-            <form id="save-form" class="panel" novalidate>
-                <label for="pattern-name">Minta neve</label>
-                <input id="pattern-name" name="name" maxlength="50" autocomplete="off" placeholder="például: Sikló">
-                <button type="submit" id="save-button">Mentés</button>
-                <p id="save-message" class="message" aria-live="polite"></p>
-            </form>
-            <section class="panel" aria-labelledby="patterns-title">
-                <h2 id="patterns-title">Mentett minták</h2>
-                <ul id="pattern-list" class="pattern-list"></ul>
-                <p id="patterns-empty" class="empty" hidden>Még nincs mentett minta.</p>
-                <p id="patterns-message" class="message" aria-live="polite"></p>
-            </section>
-        </aside>
+        <p class="empty">A tábla hamarosan itt lesz.</p>
     </main>
     <script src="game.js"></script>
     <script src="app.js"></script>

@@ -3,6 +3,6 @@
   "private": true,
   "description": "Game of Life a böngészőben, a mintákat tároló API-val",
   "scripts": {
-    "test": "node --test web/*.test.js"
+    "test": "node --test web/"
   }
 }
